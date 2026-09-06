@@ -1,9 +1,8 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// GitHub project pages: /Naijaora/
-// Custom domain naijaora.com: set VITE_BASE_PATH=/ in the workflow
+// Custom domain (naijaora.com) serves from /. Project pages URL needs /Naijaora/.
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || '/Naijaora/',
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react()],
 })
