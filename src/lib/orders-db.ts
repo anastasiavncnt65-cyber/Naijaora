@@ -134,7 +134,9 @@ export async function saveOrder(order: PlacedOrder): Promise<PlacedOrder> {
     throw new Error('Database not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
   }
 
-  const row: DbOrderInsert = {
+  const id = crypto.randomUUID();
+  const row: DbOrderInsert & { id: string } = {
+    id,
     order_number: order.orderNumber,
     customer_name: order.form.name,
     phone: order.form.phone,
@@ -145,15 +147,12 @@ export async function saveOrder(order: PlacedOrder): Promise<PlacedOrder> {
     status: order.status,
   };
 
-  const { data, error } = await supabase
-    .from('naijaora_orders')
-    .insert(row)
-    .select('id')
-    .single();
+  // No .select() — orders table has no public SELECT policy (privacy).
+  const { error } = await supabase.from('naijaora_orders').insert(row);
 
   if (error) throw new Error(error.message);
 
-  const saved = { ...order, id: data.id as string };
+  const saved = { ...order, id };
 
   // Email backup (WhatsApp is the main alert after payment)
   void notifyOwnerByEmail('order_placed', saved.orderNumber);

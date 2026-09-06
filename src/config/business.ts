@@ -120,7 +120,7 @@ export const menuItems: MenuItem[] = [
     id: 'vegetable-soup',
     categoryId: 'soups',
     name: 'Authentic Nigerian Vegetable Soup with Fufu',
-    description: 'One serve · efo riro with shaki, meat & fufu',
+    description: 'One serve · efo riro with meat & fufu',
     price: 20,
     image: '/images/vegetable-soup.png',
   },
