@@ -1,4 +1,5 @@
 import { useCart } from '../context/CartContext';
+import { asset } from '../lib/asset';
 import { formatMoney } from '../lib/orders';
 
 type CartDrawerProps = {
@@ -39,7 +40,7 @@ export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
                 <li key={line.itemId} className="cart-line">
                   <div className="cart-line-media">
                     {line.image ? (
-                      <img src={line.image} alt="" />
+                      <img src={asset(line.image)} alt="" />
                     ) : (
                       '🍴'
                     )}

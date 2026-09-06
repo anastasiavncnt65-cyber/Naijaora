@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { business, menuCategories, menuItems } from '../config/business';
 import { useCart } from '../context/CartContext';
+import { asset } from '../lib/asset';
 import { fetchPopularItemIds } from '../lib/orders-db';
 import { formatMoney } from '../lib/orders';
 
@@ -46,7 +47,7 @@ export function MenuSection() {
             <article key={item.id} className="menu-card">
               <div className="menu-card-media">
                 <img
-                  src={item.image}
+                  src={asset(item.image)}
                   alt={item.name}
                   loading="lazy"
                   decoding="async"

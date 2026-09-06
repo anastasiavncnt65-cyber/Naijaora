@@ -1,92 +1,50 @@
 # Naijaora — Food ordering website
 
-Hosted on **GitHub Pages** at [naijaora.com](https://naijaora.com) (commercial use OK).
+Uses its **own** Supabase + Resend (separate from Charge).
+
+Hosted on **GitHub Pages** → [naijaora.com](https://naijaora.com).
 
 ## Local development
 
 ```bash
 cd food-website
 npm install
-cp .env.example .env   # add Supabase URL + anon key
+# .env already points at the Naijaora Supabase project
 npm run dev
 ```
 
-## Go live on GitHub Pages
+## Backend (Naijaora-only)
 
-### 1. Create a GitHub repo
+- Supabase project: **Naijaora** (`rubgwvvkmiigrvcsjesc`)
+- Dashboard: https://supabase.com/dashboard/project/rubgwvvkmiigrvcsjesc
+- Migrations live in `food-website/supabase/migrations/`
+- Edge function: `food-website/supabase/functions/naijaora-notify`
 
-Create a new repo named **`naijaora`** (public or private — Pages works with private on free accounts for user sites; for project sites public is simplest).
+### Email alerts (separate Resend account)
 
-Push only the `food-website` folder as the repo root:
+1. Sign up at https://resend.com with **anastasia.vncnt65@gmail.com** (or a Naijaora-only account)
+2. Create an API key
+3. From `food-website` folder:
 
-```bash
-cd food-website
-git init
-git add .
-git commit -m "Naijaora website"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/naijaora.git
-git push -u origin main
+```powershell
+cd c:\Users\Chyda\Charge\food-website
+npx --yes supabase functions deploy naijaora-notify --project-ref rubgwvvkmiigrvcsjesc --no-verify-jwt
+npx --yes supabase secrets set --project-ref rubgwvvkmiigrvcsjesc RESEND_API_KEY=re_YOUR_REAL_KEY
+npx --yes supabase secrets set --project-ref rubgwvvkmiigrvcsjesc NAIJAORA_OWNER_EMAIL=anastasia.vncnt65@gmail.com
 ```
 
-### 2. Add secrets (for orders)
+## GitHub Pages
 
-GitHub repo → **Settings → Secrets and variables → Actions → New repository secret**:
+Repo: `https://github.com/anastasiavncnt65-cyber/naijaora`
 
-| Name | Value |
-|------|--------|
-| `VITE_SUPABASE_URL` | your Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | your Supabase anon key |
-
-(Same values as in `food-website/.env`)
-
-### 3. Turn on Pages
-
-GitHub repo → **Settings → Pages**:
-
-- Source: **GitHub Actions**
-
-Push to `main` (or run the workflow manually). Site will appear at `https://YOUR_USERNAME.github.io/naijaora/` until the custom domain is set.
-
-### 4. Connect naijaora.com
-
-The repo already has `public/CNAME` = `naijaora.com`.
-
-In GitHub → **Settings → Pages → Custom domain**:
-
-1. Enter `naijaora.com`
-2. Check **Enforce HTTPS** (after DNS works)
-
-At your domain registrar (where you bought naijaora.com), add:
-
-**A records** for `@` (root) pointing to GitHub Pages:
-
-```
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
-```
-
-**CNAME** for `www`:
-
-```
-www  →  YOUR_USERNAME.github.io
-```
-
-DNS can take a few minutes to a few hours. Then https://naijaora.com should load.
+1. Push `food-website` as the repo root
+2. **Settings → Secrets → Actions** add:
+   - `VITE_SUPABASE_URL` = `https://rubgwvvkmiigrvcsjesc.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = (from `.env` or Supabase → Settings → API → anon key)
+3. **Settings → Pages** → Source: **GitHub Actions**
+4. Custom domain: `naijaora.com` + DNS A records to GitHub Pages
 
 ## Order alerts
 
-- **WhatsApp / Messenger** — customer sends after payment  
-- **Email backup** — deploy `naijaora-notify` + Resend (see below)
-
-```bash
-npx supabase functions deploy naijaora-notify --no-verify-jwt
-npx supabase secrets set RESEND_API_KEY=re_xxxxx
-npx supabase secrets set NAIJAORA_OWNER_EMAIL=anastasia.vncnt65@gmail.com
-```
-
-## Business details
-
-Edit `src/config/business.ts` (phone, bank, hours, Facebook page).
+- WhatsApp / Messenger (customer sends)
+- Email backup via Resend → your Gmail

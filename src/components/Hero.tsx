@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { business } from '../config/business';
+import { asset } from '../lib/asset';
 import { fetchReviews, getAverageRating, renderStars } from '../lib/reviews';
 
 type HeroProps = {
@@ -54,7 +55,7 @@ export function Hero({ onOrderClick }: HeroProps) {
         </div>
         <div className="hero-visual">
           <img
-            src="/images/jollof-rice.png"
+            src={asset('images/jollof-rice.png')}
             alt="Naijaora jollof rice with chicken"
             className="hero-food"
             width={640}
