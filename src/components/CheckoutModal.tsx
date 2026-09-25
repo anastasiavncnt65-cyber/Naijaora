@@ -248,7 +248,7 @@ export function OrderConfirmation({ order, onUpdate, onClose }: OrderFlowProps) 
             </div>
 
             <div className="receipt-upload">
-              <p className="pickup-label">Upload bank receipt *</p>
+              <p className="field-label">Upload bank receipt *</p>
               <p className="muted">{business.payment.receiptNote}</p>
               <input
                 ref={fileInputRef}

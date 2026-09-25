@@ -26,13 +26,7 @@ export const business = {
     whatsapp: '64212391926',
     email: 'anastasia.vncnt65@gmail.com',
     publicLocation: 'Christchurch',
-    pickupAddress: '1/26 Hayton Road, Christchurch',
-    pickupInstructions:
-      'We will message you when your order is ready. Message us on WhatsApp when you arrive.',
     hours: 'Mon–Sat · 11:00am – 7:30pm · Sun · 2:00pm – 7:30pm',
-    mapsUrl: 'https://maps.google.com/?q=1/26+Hayton+Road,+Christchurch,+New+Zealand',
-    mapEmbedUrl:
-      'https://maps.google.com/maps?q=1%2F26+Hayton+Road%2C+Christchurch%2C+New+Zealand&z=16&output=embed',
   },
 
   payment: {
@@ -49,7 +43,7 @@ export const business = {
   },
 
   prepMinutes: 50,
-  prepTimeNote: 'Ready for pickup about 50 minutes after payment is verified.',
+  prepTimeNote: 'Ready about 50 minutes after payment is verified.',
 
   social: {
     instagram: '',

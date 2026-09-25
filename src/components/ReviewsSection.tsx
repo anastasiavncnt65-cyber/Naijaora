@@ -130,7 +130,7 @@ export function ReviewsSection() {
             {!loading && reviews.length === 0 && (
               <div className="empty-state">
                 <p>No reviews yet.</p>
-                <p className="muted">Be the first to leave a review after your pickup order.</p>
+                <p className="muted">Be the first to leave a review after your order.</p>
               </div>
             )}
             {reviews.map((review) => (

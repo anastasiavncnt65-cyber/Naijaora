@@ -38,12 +38,12 @@ export function AboutSection() {
           <p className="eyebrow">About</p>
           <h2>Authentic Nigerian food in Christchurch</h2>
           <p>
-            Naijaora serves bold, home-style Nigerian dishes in Christchurch. Order online,
-            pay by bank transfer, and collect when your food is ready.
+            Naijaora serves bold, home-style Nigerian dishes in Christchurch. Order online
+            and pay by bank transfer.
           </p>
           <p>
             Upload your payment receipt to confirm your order. Once verified, we prepare your
-            food and message you when it&apos;s ready for pickup.
+            food and message you when it&apos;s ready.
           </p>
         </div>
         <ul className="about-list">
@@ -57,7 +57,7 @@ export function AboutSection() {
           </li>
           <li>
             <strong>Ready in ~{business.prepMinutes} minutes</strong>
-            <span>We&apos;ll text you when your order is ready to collect.</span>
+            <span>We&apos;ll text you when your order is ready.</span>
           </li>
         </ul>
       </div>
