@@ -22,7 +22,7 @@ const steps = [
   {
     n: '5',
     title: 'Pick up when ready',
-    text: 'We’ll message you when it’s ready — usually about 50 minutes after payment is verified. Collect from 1/26 Hayton Road.',
+    text: 'We’ll message you when it’s ready — usually about 50 minutes after payment is verified.',
   },
 ];
 

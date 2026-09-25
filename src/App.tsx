@@ -9,7 +9,6 @@ import { HowToOrder } from './components/HowToOrder';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { MenuSection } from './components/MenuSection';
-import { PickupMap } from './components/PickupMap';
 import { ReviewsSection } from './components/ReviewsSection';
 import { CartProvider } from './context/CartContext';
 import type { PlacedOrder } from './types';
@@ -45,7 +44,6 @@ function App() {
         <HowToOrder />
         <MenuSection />
         <AboutSection />
-        <PickupMap />
         <ReviewsSection />
       </main>
       <Footer />

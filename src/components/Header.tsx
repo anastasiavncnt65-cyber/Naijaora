@@ -23,9 +23,6 @@ export function Header({ onCartClick, onOrderClick }: HeaderProps) {
           <a className="nav-link" href="#how-to-order">
             How to order
           </a>
-          <a className="nav-link" href="#pickup">
-            Pickup
-          </a>
           <a className="nav-link" href="#reviews">
             Reviews
           </a>

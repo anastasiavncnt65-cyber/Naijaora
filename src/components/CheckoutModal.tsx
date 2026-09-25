@@ -120,15 +120,7 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
                 </label>
               </fieldset>
 
-              <fieldset>
-                <legend>Pickup</legend>
-                <div className="pickup-location-card">
-                  <p className="pickup-label">Address</p>
-                  <p className="pickup-address">{business.contact.pickupAddress}</p>
-                  <p className="muted">{business.contact.hours}</p>
-                </div>
-                <p className="field-note">{business.prepTimeNote}</p>
-              </fieldset>
+              <p className="field-note">{business.prepTimeNote}</p>
             </div>
 
             <aside className="checkout-side">
@@ -278,11 +270,6 @@ export function OrderConfirmation({ order, onUpdate, onClose }: OrderFlowProps) 
               )}
             </div>
 
-            <div className="pickup-location-card align-left">
-              <p className="pickup-label">Pickup at</p>
-              <p className="pickup-address">{business.contact.pickupAddress}</p>
-            </div>
-
             {error && <p className="form-error">{error}</p>}
 
             <div className="confirmation-actions">
@@ -310,14 +297,8 @@ export function OrderConfirmation({ order, onUpdate, onClose }: OrderFlowProps) 
 
             <p className="muted">
               We&apos;re preparing your order now. We&apos;ll message{' '}
-              <strong>{order.form.phone}</strong> when it&apos;s ready for pickup.
+              <strong>{order.form.phone}</strong> when it&apos;s ready.
             </p>
-
-            <div className="pickup-location-card align-left">
-              <p className="pickup-label">Pickup at</p>
-              <p className="pickup-address">{business.contact.pickupAddress}</p>
-              <p>{business.contact.pickupInstructions}</p>
-            </div>
 
             <p className="muted notify-hint">
               Send your order to us so we can start preparing it:

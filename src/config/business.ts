@@ -6,7 +6,7 @@ export const business = {
   name: 'Naijaora',
   tagline: 'Experience the taste of Naija',
   description:
-    'Authentic Nigerian dishes, cooked fresh to order. Pickup in Christchurch — pay by bank transfer and upload your payment receipt to confirm.',
+    'Authentic Nigerian dishes, cooked fresh to order. Pay by bank transfer and upload your payment receipt to confirm.',
 
   brand: {
     primary: '#C86B1A',

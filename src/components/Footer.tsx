@@ -9,11 +9,6 @@ export function Footer() {
           <p className="footer-tagline">{business.tagline}</p>
         </div>
         <div>
-          <h4>Pickup</h4>
-          <p>{business.contact.pickupAddress}</p>
-          <p>{business.contact.hours}</p>
-        </div>
-        <div>
           <h4>Contact</h4>
           <p>
             <a href={`tel:${business.contact.phone.replace(/\s/g, '')}`}>
@@ -23,6 +18,7 @@ export function Footer() {
           <p>
             <a href={`mailto:${business.contact.email}`}>{business.contact.email}</a>
           </p>
+          <p>{business.contact.hours}</p>
         </div>
       </div>
       <div className="footer-bottom">
