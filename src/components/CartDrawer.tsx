@@ -81,7 +81,7 @@ export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
             </ul>
 
             <div className="cart-footer">
-              <p className="cart-note">Pickup only · Payment required to confirm</p>
+              <p className="cart-note">Payment required to confirm</p>
               <div className="cart-summary-row">
                 <span>{itemCount} items</span>
                 <strong>{formatMoney(subtotal)}</strong>

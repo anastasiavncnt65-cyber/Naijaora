@@ -33,9 +33,6 @@ export function HowToOrder() {
         <div className="section-heading">
           <p className="eyebrow">Getting started</p>
           <h2>How to order</h2>
-          <p className="section-lead">
-            Simple pickup ordering — pay by bank transfer, no delivery.
-          </p>
         </div>
 
         <ol className="howto-steps">

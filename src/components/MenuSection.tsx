@@ -24,7 +24,6 @@ export function MenuSection() {
       <div className="container">
         <div className="section-heading">
           <h2>Menu</h2>
-          <p>Pickup only · Christchurch</p>
         </div>
 
         <div className="category-tabs" role="tablist" aria-label="Menu categories">

@@ -25,7 +25,7 @@ export const business = {
     /** Digits only with country code — used for WhatsApp links */
     whatsapp: '64212391926',
     email: 'anastasia.vncnt65@gmail.com',
-    publicLocation: 'Christchurch · Pickup only',
+    publicLocation: 'Christchurch',
     pickupAddress: '1/26 Hayton Road, Christchurch',
     pickupInstructions:
       'We will message you when your order is ready. Message us on WhatsApp when you arrive.',
