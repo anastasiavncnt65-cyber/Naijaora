@@ -18,6 +18,7 @@ function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null);
+  const [orderChannel, setOrderChannel] = useState<'whatsapp' | 'messenger' | null>(null);
 
   function scrollToMenu() {
     document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
@@ -28,8 +29,9 @@ function App() {
     setCheckoutOpen(true);
   }
 
-  function handleOrderPlaced(order: PlacedOrder) {
+  function handleOrderPlaced(order: PlacedOrder, channel: 'whatsapp' | 'messenger') {
     setCheckoutOpen(false);
+    setOrderChannel(channel);
     setPlacedOrder(order);
   }
 
@@ -60,8 +62,11 @@ function App() {
       />
       <OrderConfirmation
         order={placedOrder}
-        onUpdate={setPlacedOrder}
-        onClose={() => setPlacedOrder(null)}
+        channel={orderChannel}
+        onClose={() => {
+          setPlacedOrder(null);
+          setOrderChannel(null);
+        }}
       />
     </CartProvider>
   );

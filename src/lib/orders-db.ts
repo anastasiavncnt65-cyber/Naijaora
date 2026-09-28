@@ -28,34 +28,21 @@ export function formatReadyTime(iso: string): string {
   });
 }
 
-function buildOrderMessage(order: PlacedOrder): string {
+export function buildOrderMessage(order: PlacedOrder): string {
   const items = order.lines
-    .map((l) => `${l.quantity}x ${l.name} ($${(l.price * l.quantity).toFixed(2)})`)
+    .map((l) => {
+      const serve = l.quantity === 1 ? 'serve' : 'serves';
+      return `${l.quantity} ${serve} of ${l.name}`;
+    })
     .join('\n');
 
-  const isPaid = order.status === 'payment_submitted';
-
   return [
-    isPaid
-      ? `Hi Naijaora — I've paid for order ${order.orderNumber}`
-      : `Hi Naijaora — new order ${order.orderNumber}`,
-    '',
-    `Name: ${order.form.name}`,
-    `Phone: ${order.form.phone}`,
-    order.form.email ? `Email: ${order.form.email}` : '',
-    '',
-    'Items:',
+    `Hi Naijaora, my name is ${order.form.name.trim()} and I want:`,
     items,
     '',
     `Total: $${order.total.toFixed(2)}`,
-    isPaid ? 'Payment: sent (receipt attached below)' : 'Payment: pending',
-    order.receiptUrl ? `Receipt: ${order.receiptUrl}` : '',
-    order.estimatedReadyAt
-      ? `Ready around: ${formatReadyTime(order.estimatedReadyAt)}`
-      : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
+    `Phone: ${order.form.phone.trim()}`,
+  ].join('\n');
 }
 
 /** Opens WhatsApp to the business number with the order details pre-filled. */

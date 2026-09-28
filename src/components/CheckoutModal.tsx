@@ -1,24 +1,19 @@
-import { useRef, useState, type FormEvent } from 'react';
-import { business } from '../config/business';
+import { useState, type FormEvent } from 'react';
 import { useCart } from '../context/CartContext';
 import {
   buildMessengerUrl,
+  buildOrderMessage,
   buildWhatsAppUrl,
-  confirmOrderPayment,
-  formatReadyTime,
   openMessenger,
   openWhatsApp,
-  saveOrder,
-  uploadReceipt,
 } from '../lib/orders-db';
 import { generateOrderNumber, formatMoney } from '../lib/orders';
-import { supabaseConfigured } from '../lib/supabase';
 import type { CheckoutForm, PlacedOrder } from '../types';
 
 type CheckoutModalProps = {
   open: boolean;
   onClose: () => void;
-  onOrderPlaced: (order: PlacedOrder) => void;
+  onOrderPlaced: (order: PlacedOrder, channel: 'whatsapp' | 'messenger') => void;
 };
 
 const initialForm: CheckoutForm = {
@@ -31,48 +26,52 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
   const { lines, subtotal, total, clearCart } = useCart();
   const [form, setForm] = useState<CheckoutForm>(initialForm);
   const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [sending, setSending] = useState<'whatsapp' | 'messenger' | null>(null);
 
   if (!open) return null;
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  function buildOrder(): PlacedOrder | null {
     setError('');
-
-    if (!supabaseConfigured) {
-      setError('Ordering is not connected yet. Please contact us directly.');
-      return;
-    }
-
     if (!form.name.trim() || !form.phone.trim()) {
       setError('Please enter your name and phone number.');
-      return;
+      return null;
     }
-
-    setSubmitting(true);
-
-    let order: PlacedOrder = {
+    if (lines.length === 0) {
+      setError('Your cart is empty.');
+      return null;
+    }
+    return {
       orderNumber: generateOrderNumber(),
       lines: [...lines],
       subtotal,
       total,
       form: { ...form },
       placedAt: new Date().toISOString(),
-      status: 'pending_payment',
+      status: 'messaging',
     };
+  }
 
-    try {
-      order = await saveOrder(order);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not save your order. Please try again.');
-      setSubmitting(false);
+  async function handleChannel(channel: 'whatsapp' | 'messenger', e?: FormEvent) {
+    e?.preventDefault();
+    const order = buildOrder();
+    if (!order) return;
+
+    if (channel === 'messenger' && !buildMessengerUrl()) {
+      setError('Messenger is not set up yet. Please use WhatsApp.');
       return;
+    }
+
+    setSending(channel);
+    if (channel === 'whatsapp') {
+      openWhatsApp(order);
+    } else {
+      await openMessenger(order);
     }
 
     clearCart();
     setForm(initialForm);
-    setSubmitting(false);
-    onOrderPlaced(order);
+    setSending(null);
+    onOrderPlaced(order, channel);
   }
 
   return (
@@ -85,7 +84,12 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
           </button>
         </div>
 
-        <form className="checkout-form" onSubmit={handleSubmit}>
+        <form
+          className="checkout-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <div className="checkout-columns">
             <div className="checkout-main">
               <fieldset>
@@ -106,21 +110,14 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     required
-                    placeholder="We will message you when your order is ready"
-                  />
-                </label>
-                <label>
-                  Email
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="Optional"
+                    placeholder="So we can message you back"
                   />
                 </label>
               </fieldset>
 
-              <p className="field-note">{business.prepTimeNote}</p>
+              <p className="field-note">
+                Send your order on WhatsApp or Messenger — we&apos;ll finish details there.
+              </p>
             </div>
 
             <aside className="checkout-side">
@@ -137,35 +134,36 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
               </ul>
               <div className="summary-totals">
                 <div className="summary-total">
-                  <span>Total due</span>
+                  <span>Total</span>
                   <strong>{formatMoney(total)}</strong>
                 </div>
               </div>
 
-              <div className="payment-box">
-                <h4>Pay by bank transfer</h4>
-                <p>{business.payment.instructions}</p>
-                <dl>
-                  <div>
-                    <dt>Account name</dt>
-                    <dd>{business.payment.bank.accountName}</dd>
-                  </div>
-                  <div>
-                    <dt>Bank</dt>
-                    <dd>{business.payment.bank.bankName}</dd>
-                  </div>
-                  <div>
-                    <dt>Account number</dt>
-                    <dd className="mono">{business.payment.bank.accountNumber}</dd>
-                  </div>
-                </dl>
-              </div>
-
               {error && <p className="form-error">{error}</p>}
 
-              <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
-                {submitting ? 'Saving order…' : 'Place order'}
-              </button>
+              <div className="channel-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block"
+                  disabled={sending !== null}
+                  onClick={() => handleChannel('whatsapp')}
+                >
+                  {sending === 'whatsapp' ? 'Opening WhatsApp…' : 'Send on WhatsApp'}
+                </button>
+                {buildMessengerUrl() && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-block"
+                    disabled={sending !== null}
+                    onClick={() => handleChannel('messenger')}
+                  >
+                    {sending === 'messenger' ? 'Opening Messenger…' : 'Send on Messenger'}
+                  </button>
+                )}
+              </div>
+              <p className="muted messenger-hint">
+                Opens a chat with your order ready to send. We&apos;ll continue there.
+              </p>
             </aside>
           </div>
         </form>
@@ -176,163 +174,59 @@ export function CheckoutModal({ open, onClose, onOrderPlaced }: CheckoutModalPro
 
 type OrderFlowProps = {
   order: PlacedOrder | null;
-  onUpdate: (order: PlacedOrder) => void;
+  channel: 'whatsapp' | 'messenger' | null;
   onClose: () => void;
 };
 
-export function OrderConfirmation({ order, onUpdate, onClose }: OrderFlowProps) {
-  const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState('');
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+export function OrderConfirmation({ order, channel, onClose }: OrderFlowProps) {
   if (!order) return null;
-
-  const isPaid = order.status === 'payment_submitted';
-
-  function handleReceiptChange(file: File | null) {
-    setReceiptFile(file);
-    if (receiptPreview) URL.revokeObjectURL(receiptPreview);
-    setReceiptPreview(file ? URL.createObjectURL(file) : null);
-  }
-
-  async function handlePaymentConfirmed() {
-    if (!receiptFile) {
-      setError('Please upload a screenshot of your bank transfer receipt.');
-      return;
-    }
-
-    setConfirming(true);
-    setError('');
-    try {
-      const receiptUrl = await uploadReceipt(order!.orderNumber, receiptFile);
-      const updated = await confirmOrderPayment(order!, receiptUrl);
-      onUpdate(updated);
-      // Opens WhatsApp so the customer can send you the order + receipt (free, no Twilio)
-      openWhatsApp(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not confirm payment. Please try again.');
-    }
-    setConfirming(false);
-  }
 
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true">
       <div className="modal confirmation-modal">
-        {!isPaid ? (
-          <>
-            <div className="confirmation-icon pending">1</div>
-            <h2>Pay & upload receipt</h2>
-            <p className="order-number">{order.orderNumber}</p>
-            <p>
-              Transfer <strong>{formatMoney(order.total)}</strong> using reference{' '}
-              <strong>{order.orderNumber}</strong>.
-            </p>
+        <div className="confirmation-icon">✓</div>
+        <h2>Continue in chat</h2>
+        <p className="muted">
+          Your order message is ready
+          {channel === 'whatsapp' ? ' on WhatsApp' : channel === 'messenger' ? ' on Messenger' : ''}.
+          Send it, then we&apos;ll continue the conversation there.
+        </p>
 
-            <div className="payment-box align-left">
-              <dl>
-                <div>
-                  <dt>Account number</dt>
-                  <dd className="mono">{business.payment.bank.accountNumber}</dd>
-                </div>
-                <div>
-                  <dt>Reference</dt>
-                  <dd className="mono highlight">{order.orderNumber}</dd>
-                </div>
-                <div>
-                  <dt>Amount</dt>
-                  <dd className="mono highlight">{formatMoney(order.total)}</dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className="receipt-upload">
-              <p className="field-label">Upload bank receipt *</p>
-              <p className="muted">{business.payment.receiptNote}</p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(e) => handleReceiptChange(e.target.files?.[0] ?? null)}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary btn-block"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {receiptFile ? 'Change screenshot' : 'Choose screenshot'}
-              </button>
-              {receiptFile && <p className="file-name">{receiptFile.name}</p>}
-              {receiptPreview && (
-                <img src={receiptPreview} alt="Receipt preview" className="receipt-preview" />
-              )}
-            </div>
-
-            {error && <p className="form-error">{error}</p>}
-
-            <div className="confirmation-actions">
-              <button
-                type="button"
-                className="btn btn-primary btn-block"
-                onClick={handlePaymentConfirmed}
-                disabled={confirming || !receiptFile}
-              >
-                {confirming ? 'Submitting…' : 'Confirm payment'}
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="confirmation-icon">✓</div>
-            <h2>Order confirmed</h2>
-            <p className="order-number">{order.orderNumber}</p>
-
-            {order.estimatedReadyAt && (
-              <p className="ready-time">
-                See you around <strong>{formatReadyTime(order.estimatedReadyAt)}</strong>
-              </p>
-            )}
-
-            <p className="muted">
-              We&apos;re preparing your order now. We&apos;ll message{' '}
-              <strong>{order.form.phone}</strong> when it&apos;s ready.
-            </p>
-
-            <p className="muted notify-hint">
-              Send your order to us so we can start preparing it:
-            </p>
-
-            <div className="confirmation-actions">
-              <a
-                className="btn btn-primary btn-block"
-                href={buildWhatsAppUrl(order)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Send on WhatsApp
-              </a>
-              {buildMessengerUrl() && (
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-block"
-                  onClick={() => openMessenger(order)}
-                >
-                  Send on Messenger
-                </button>
-              )}
-              <button type="button" className="btn btn-secondary btn-block" onClick={onClose}>
-                Back to menu
-              </button>
-            </div>
-            {buildMessengerUrl() && (
-              <p className="muted messenger-hint">
-                Messenger: order details are copied — paste them into the chat.
-              </p>
-            )}
-          </>
+        {channel === 'messenger' && (
+          <p className="muted messenger-hint">
+            Messenger: the order text was copied — paste it into the chat if it didn&apos;t appear.
+          </p>
         )}
+
+        <div className="confirmation-actions">
+          {channel === 'whatsapp' && (
+            <a
+              className="btn btn-primary btn-block"
+              href={buildWhatsAppUrl(order)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open WhatsApp again
+            </a>
+          )}
+          {channel === 'messenger' && buildMessengerUrl() && (
+            <button
+              type="button"
+              className="btn btn-primary btn-block"
+              onClick={() => openMessenger(order)}
+            >
+              Open Messenger again
+            </button>
+          )}
+          <button type="button" className="btn btn-secondary btn-block" onClick={onClose}>
+            Back to menu
+          </button>
+        </div>
+
+        <details className="order-preview">
+          <summary>Preview message</summary>
+          <pre>{buildOrderMessage(order)}</pre>
+        </details>
       </div>
     </div>
   );

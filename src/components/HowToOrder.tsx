@@ -6,23 +6,18 @@ const steps = [
   },
   {
     n: '2',
-    title: 'Checkout & pay',
-    text: 'Enter your details, then transfer the total to our Westpac account using your order number as the reference.',
+    title: 'Checkout',
+    text: 'Enter your name and phone number.',
   },
   {
     n: '3',
-    title: 'Upload your receipt',
-    text: 'Screenshot your online banking confirmation and upload it to confirm your order.',
+    title: 'Send on WhatsApp or Messenger',
+    text: 'Choose WhatsApp or Messenger — your order message opens ready to send.',
   },
   {
     n: '4',
-    title: 'Send on WhatsApp or Messenger',
-    text: 'Send us your order so we know it is ready to prepare. Email also notifies us as a backup.',
-  },
-  {
-    n: '5',
-    title: 'When it’s ready',
-    text: 'We’ll message you when it’s ready — usually about 50 minutes after payment is verified.',
+    title: 'We continue in chat',
+    text: 'We’ll reply there to confirm details and when your order will be ready.',
   },
 ];
 

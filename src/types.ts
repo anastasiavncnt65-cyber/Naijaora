@@ -12,7 +12,7 @@ export type CheckoutForm = {
   email: string;
 };
 
-export type OrderStatus = 'pending_payment' | 'payment_submitted';
+export type OrderStatus = 'messaging' | 'pending_payment' | 'payment_submitted';
 
 export type PlacedOrder = {
   id?: string;

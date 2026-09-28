@@ -6,7 +6,7 @@ export const business = {
   name: 'Naijaora',
   tagline: 'Experience the taste of Naija',
   description:
-    'Authentic Nigerian dishes, cooked fresh to order. Pay by bank transfer and upload your payment receipt to confirm.',
+    'Authentic Nigerian dishes, cooked fresh to order. Message us on WhatsApp or Messenger to place your order.',
 
   brand: {
     primary: '#C86B1A',
@@ -43,7 +43,7 @@ export const business = {
   },
 
   prepMinutes: 50,
-  prepTimeNote: 'Ready about 50 minutes after payment is verified.',
+  prepTimeNote: 'Ready about 50 minutes after we confirm your order.',
 
   social: {
     instagram: '',
