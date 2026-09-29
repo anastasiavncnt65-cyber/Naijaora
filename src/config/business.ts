@@ -48,11 +48,10 @@ export const business = {
   social: {
     instagram: '',
     /**
-     * Facebook Page username only (from facebook.com/YourPageName).
-     * Used for Messenger: m.me/YourPageName
-     * Leave empty to hide Messenger until set.
+     * Facebook Page ID (preferred) or username / full URL.
+     * Messaging must be turned on for the Page.
      */
-    facebook: 'Naijaora',
+    facebook: '100094410940133',
   },
 } as const;
 

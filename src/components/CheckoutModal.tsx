@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useCart } from '../context/CartContext';
 import {
+  buildFacebookPageUrl,
   buildMessengerUrl,
   buildOrderMessage,
   buildWhatsAppUrl,
@@ -193,9 +194,22 @@ export function OrderConfirmation({ order, channel, onClose }: OrderFlowProps) {
         </p>
 
         {channel === 'messenger' && (
-          <p className="muted messenger-hint">
-            Messenger: the order text was copied — paste it into the chat if it didn&apos;t appear.
-          </p>
+          <>
+            <p className="muted messenger-hint">
+              Order text was copied. If Messenger didn&apos;t open the Naijaora chat, open the
+              Page, tap <strong>Message</strong>, then paste.
+            </p>
+            {buildFacebookPageUrl() && (
+              <a
+                className="btn btn-secondary btn-block"
+                href={buildFacebookPageUrl()!}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open Facebook Page
+              </a>
+            )}
+          </>
         )}
 
         <div className="confirmation-actions">

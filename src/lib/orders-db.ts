@@ -50,21 +50,59 @@ export function buildWhatsAppUrl(order: PlacedOrder): string {
   return `https://wa.me/${business.contact.whatsapp}?text=${encodeURIComponent(buildOrderMessage(order))}`;
 }
 
-export function openWhatsApp(order: PlacedOrder) {
-  window.open(buildWhatsAppUrl(order), '_blank', 'noopener,noreferrer');
+/** Messenger chat URL for the Facebook Page. */
+export function buildMessengerUrl(): string | null {
+  const raw = business.social.facebook.trim();
+  if (!raw) return null;
+
+  if (/^https?:\/\/(m\.me|www\.messenger\.com)\//i.test(raw)) {
+    return raw;
+  }
+
+  // facebook.com/profile.php?id=123 or facebook.com/YourPage
+  const profileId = raw.match(/[?&]id=(\d+)/i)?.[1];
+  if (profileId) {
+    return `https://m.me/${profileId}`;
+  }
+
+  let id = raw
+    .replace(/^https?:\/\/(www\.|m\.)?facebook\.com\//i, '')
+    .replace(/^https?:\/\/m\.me\//i, '')
+    .replace(/^profile\.php\?id=/i, '')
+    .replace(/\/$/, '')
+    .split(/[/?#]/)[0];
+
+  if (!id) return null;
+
+  // Page / profile ID is the reliable deep link
+  if (/^\d+$/.test(id)) {
+    return `https://m.me/${id}`;
+  }
+
+  return `https://m.me/${encodeURIComponent(id)}`;
 }
 
-/** Messenger page chat — Messenger can't pre-fill text, so we copy the order for paste. */
-export function buildMessengerUrl(): string | null {
-  const page = business.social.facebook.trim();
-  if (!page) return null;
-  const username = page
-    .replace(/^https?:\/\/(www\.)?facebook\.com\//i, '')
-    .replace(/^https?:\/\/m\.me\//i, '')
-    .replace(/\/$/, '')
-    .split('?')[0];
-  if (!username) return null;
-  return `https://m.me/${username}`;
+export function buildFacebookPageUrl(): string | null {
+  const raw = business.social.facebook.trim();
+  if (!raw) return null;
+  if (/^https?:\/\/(www\.|m\.)?facebook\.com\//i.test(raw)) return raw;
+  if (/^\d+$/.test(raw)) return `https://www.facebook.com/profile.php?id=${raw}`;
+  if (/^https?:\/\//i.test(raw)) return null;
+  return `https://www.facebook.com/${raw.replace(/^\//, '')}`;
+}
+
+function openExternalUrl(url: string) {
+  // Same-tab assign helps mobile open the Messenger / WhatsApp app
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = url;
+    return;
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+export function openWhatsApp(order: PlacedOrder) {
+  openExternalUrl(buildWhatsAppUrl(order));
 }
 
 export async function openMessenger(order: PlacedOrder): Promise<boolean> {
@@ -77,7 +115,7 @@ export async function openMessenger(order: PlacedOrder): Promise<boolean> {
     // Clipboard may be blocked — still open Messenger
   }
 
-  window.open(url, '_blank', 'noopener,noreferrer');
+  openExternalUrl(url);
   return true;
 }
 
